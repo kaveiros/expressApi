@@ -5,8 +5,8 @@ const bill = new mongoose.Schema({
     afm : Number,
     name : String,
     billNumber : Number,
-    billDate : Date,
-    paymentDates : [{amount:Number, date:Date}],
+    billDate : String,
+    paymentDates : [{amount:Number, date:String}],
     remainingAmount:Number
 })
 

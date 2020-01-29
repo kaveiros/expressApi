@@ -31,4 +31,24 @@ router.post('/create', (req,res) => {
     })
 })
 
+//get all bills
+router.get('/all', (req, res) => {
+    Bill.find({}, (err, invoices) => {
+        if(err) return res.status(500).send("There was an issue fetching all invoices")
+        res.status(200).send(invoices)
+    })
+})
+
+//delete bill
+router.delete('/erase', (req, res) => {
+    Bill.findOneAndDelete(req.params.afm, (err, bill ) => {
+        if (err) return res.status(500).send("There was an issue deleting the invoice")
+        res.status(200).send("deleted")
+    })
+})
+
+
+
+
+
 module.exports = router

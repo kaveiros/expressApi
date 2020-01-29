@@ -1,1 +1,1 @@
-A simple crud application for invoices using mongoDB
+A simple crud application using express for invoices using mongoDB
