@@ -55,12 +55,24 @@ router.post('/create', cors(), (req, res) => {
     })
 })
 
-//get all bills
+router.get('/all/:page*?', cors(), async (req, res) => {
+
+    var page = req.params.page || 1
+    await getInvoices(page, req, res)
+    })
+
+
+//search all bills
 router.post('/all/:page*?', cors(), async (req, res) => {
 
-    var perPage = 20
     var page = req.params.page || 1
+    await getInvoices(page, req, res)
+    })
+
+
+async function getInvoices (page, req, res) {
     console.log(req.body)
+    var perPage = 20
     var nameQuery = req.body.name || ""
     var afmQuery = req.body.afm || 0
     var amountQuery = req.body.mainAmount || 0
@@ -76,7 +88,7 @@ router.post('/all/:page*?', cors(), async (req, res) => {
     }
         try {
 
-            const count = await Bill.countDocuments({queryObject})
+            const count = await Bill.countDocuments(queryObject)
             const invoices = await Bill
                 .find(queryObject)
                 .skip((perPage * page) - perPage).sort({ afm: -1 }).limit(perPage)
@@ -95,7 +107,7 @@ router.post('/all/:page*?', cors(), async (req, res) => {
         //     if(err) return res.status(500).send("There was an issue fetching all invoices")
         //      res.status(200).send(invoices)
         // })
-    })
+} 
 
 //get bill 
 router.get('/:id', cors(), (req, res) => {
