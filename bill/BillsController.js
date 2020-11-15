@@ -56,10 +56,7 @@ router.post('/create', cors(), (req, res) => {
 
 router.get('/all/:page*?', cors(), async (req, res) => {
 
-    var page = req.params.page || 1
-    if (Number(page) === 0 ){
-        page = 1
-    }
+    var page = Number(req.params.page) || 1
     await getInvoices(page, req, res)
     })
 
@@ -76,6 +73,9 @@ router.post('/all/:page*?', cors(), async (req, res) => {
 
 async function getInvoices (page, req, res) {
     var perPage = 20
+    if (page === 0){
+        page = 1
+    }
     var nameQuery = req.body.name || ""
     var afmQuery = req.body.afm || 0
     var amountQuery = req.body.mainAmount || 0
