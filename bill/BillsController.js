@@ -38,7 +38,6 @@ router.get('/faker', cors(), (req, res) => {
 
 //Create new Invoice
 router.post('/create', cors(), (req, res) => {
-    console.log(req)
     Bill.create({
         afm: req.body.afm,
         name: req.body.name,
@@ -58,6 +57,9 @@ router.post('/create', cors(), (req, res) => {
 router.get('/all/:page*?', cors(), async (req, res) => {
 
     var page = req.params.page || 1
+    if (Number(page) === 0 ){
+        page = 1
+    }
     await getInvoices(page, req, res)
     })
 
@@ -66,12 +68,13 @@ router.get('/all/:page*?', cors(), async (req, res) => {
 router.post('/all/:page*?', cors(), async (req, res) => {
 
     var page = req.params.page || 1
-    await getInvoices(page, req, res)
+    console.log(page)
+
+    //await getInvoices(page, req, res)
     })
 
 
 async function getInvoices (page, req, res) {
-    console.log(req.body)
     var perPage = 20
     var nameQuery = req.body.name || ""
     var afmQuery = req.body.afm || 0
@@ -91,7 +94,7 @@ async function getInvoices (page, req, res) {
             const count = await Bill.countDocuments(queryObject)
             const invoices = await Bill
                 .find(queryObject)
-                .skip((perPage * page) - perPage).sort({ afm: -1 }).limit(perPage)
+                .skip((perPage * page) - perPage).sort({ afm: 1 }).limit(perPage)
             res.status(200).send(
                 {
                     pages: Math.ceil(count / perPage),
