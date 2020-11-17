@@ -66,8 +66,9 @@ router.post('/all/:page*?', cors(), async (req, res) => {
 
     var page = req.params.page || 1
     console.log(page)
+    console.log(req.body)
 
-    //await getInvoices(page, req, res)
+    await getInvoices(page, req, res)
     })
 
 
@@ -76,18 +77,20 @@ async function getInvoices (page, req, res) {
     if (page === 0){
         page = 1
     }
-    var nameQuery = req.body.name || ""
-    var afmQuery = req.body.afm || 0
-    var amountQuery = req.body.mainAmount || 0
+    let dropDownValue = req.body.dropDownValue
+    let searchTerm = req.body.searchTerm 
     var queryObject = {}
-    if (nameQuery != "") {
-        queryObject = { name: nameQuery}
+    //search for name
+    if (dropDownValue === "name") {
+        queryObject = {name: {$regex:searchTerm}}
     }
-    else if (afmQuery != ""){
-        queryObject = {afm : {$eq : afmQuery}}
+    //search for afm
+    else if (dropDownValue === "afm"){
+       queryObject = {afm:Number(searchTerm)}
     }
-    else if (amountQuery != 0){
-        queryObject = {mainAmount : amountQuery}
+    //search for billNumber
+    else if (dropDownValue === "billNumber"){
+        queryObject = {billNumber:Number(searchTerm)}
     }
         try {
 
