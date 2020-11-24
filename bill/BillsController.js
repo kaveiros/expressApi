@@ -43,7 +43,8 @@ router.post('/create', cors(), (req, res) => {
         name: req.body.name,
         billNumber: req.body.billNumber,
         billDate: req.body.mainDate,
-        mainAmount: req.body.mainAmount
+        mainAmount: req.body.mainAmount,
+        additionalPayments: req.body.additionalPayments
     }, (err, Bill) => {
         if (err) {
             console.log(err)
