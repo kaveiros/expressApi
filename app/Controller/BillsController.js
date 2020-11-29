@@ -1,21 +1,17 @@
-const express = require('express')
-const router = express.Router()
-const bodyParser = require('body-parser')
-const cors = require("cors");
-router.use(bodyParser.urlencoded({ extended: true }))
-router.use(bodyParser.json())
+const db = require('../config/dbPool')
+const Bill = db.Bill
+
 const faker = require('faker');
 
 
-const Bill = require('./Bill')
 
-router.get('/info', cors(), (req, res) => {
+exports.info = (req, res) => {
 
     res.status(200).send("Version 0.1")
-})
+}
 
 
-router.get('/faker', cors(), (req, res) => {
+exports.faker = (req, res) => {
 
     for (var i = 0; i < 30000; i++) {
         Bill.create({
@@ -34,43 +30,37 @@ router.get('/faker', cors(), (req, res) => {
     }
     return res.status(201).send("Created fake data")
 
-})
+}
 
 //Create new Invoice
-router.post('/create', cors(), (req, res) => {
-    Bill.create({
+exports.create = (req, res) => {
+
+    var bill = new Bill({
         afm: req.body.afm,
         name: req.body.name,
         billNumber: req.body.billNumber,
         billDate: req.body.mainDate,
         mainAmount: req.body.mainAmount,
         additionalPayments: req.body.additionalPayments
-    }, (err, Bill) => {
-        if (err) {
-            console.log(err)
-            //change error response
-            return res.status(500).send(err)
-        }
-        return res.status(201).send(Bill)
-    })
-})
-
-router.get('/all/:page*?', cors(), async (req, res) => {
-
-    var page = Number(req.params.page) || 1
-    await getInvoices(page, req, res)
     })
 
+    bill.save(bill).then(data=> {
+        return res.status(201).send(data)
+
+    }).catch(err=>{
+        return res.status(500).send(err)
+    })
+}
 
 //search all bills
-router.post('/all/:page*?', cors(), async (req, res) => {
+exports.search = async (req, res) => {
 
     var page = req.params.page || 1
     console.log(page)
     console.log(req.body)
 
     await getInvoices(page, req, res)
-    })
+    }
 
 
 async function getInvoices (page, req, res) {
@@ -110,30 +100,20 @@ async function getInvoices (page, req, res) {
         catch (error) {
             res.status(500).send(error)
         }
-        // Bill.find({}, (err, invoices) => {
-        //     if(err) return res.status(500).send("There was an issue fetching all invoices")
-        //      res.status(200).send(invoices)
-        // })
 } 
 
 //get bill 
-router.get('/:id', cors(), (req, res) => {
+exports.getInvoice = (req, res) => {
     Bill.findById(req.params.id, (err, bill) => {
-        if (err) return res.status(500).send("There was an issue fetching all invoices")
+        if (err) return res.status(500).send("There was an issue fetcing invoice")
         res.status(200).send(bill)
     })
-})
+}
 
 //delete bill
-router.delete('/erase', (req, res) => {
+exports.deleteInvoice = (req, res) => {
     Bill.findOneAndDelete(req.params.afm, (err, bill) => {
         if (err) return res.status(500).send("There was an issue deleting the invoice")
         res.status(200).send("deleted")
     })
-})
-
-
-
-
-
-module.exports = router
+}
