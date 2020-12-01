@@ -44,10 +44,10 @@ exports.create = (req, res) => {
         additionalPayments: req.body.additionalPayments
     })
 
-    bill.save(bill).then(data=> {
+    bill.save(bill).then(data => {
         return res.status(201).send(data)
 
-    }).catch(err=>{
+    }).catch(err => {
         return res.status(500).send(err)
     })
 }
@@ -60,47 +60,47 @@ exports.search = async (req, res) => {
     console.log(req.body)
 
     await getInvoices(page, req, res)
-    }
+}
 
 
-async function getInvoices (page, req, res) {
+async function getInvoices(page, req, res) {
     var perPage = 20
-    if (page === 0){
+    if (page === 0) {
         page = 1
     }
     let dropDownValue = req.body.dropDownValue
-    let searchTerm = req.body.searchTerm 
+    let searchTerm = req.body.searchTerm
     var queryObject = {}
     //search for name
     if (dropDownValue === "name") {
-        queryObject = {name: {$regex:searchTerm}}
+        queryObject = { name: { $regex: searchTerm } }
     }
     //search for afm
-    else if (dropDownValue === "afm"){
-       queryObject = {afm:Number(searchTerm)}
+    else if (dropDownValue === "afm") {
+        queryObject = { afm: Number(searchTerm) }
     }
     //search for billNumber
-    else if (dropDownValue === "billNumber"){
-        queryObject = {billNumber:Number(searchTerm)}
+    else if (dropDownValue === "billNumber") {
+        queryObject = { billNumber: Number(searchTerm) }
     }
-        try {
+    try {
 
-            const count = await Bill.countDocuments(queryObject)
-            const invoices = await Bill
-                .find(queryObject)
-                .skip((perPage * page) - perPage).sort({ afm: 1 }).limit(perPage)
-            res.status(200).send(
-                {
-                    pages: Math.ceil(count / perPage),
-                    currentPage: page,
-                    invoices: invoices
-                })
+        const count = await Bill.countDocuments(queryObject)
+        const invoices = await Bill
+            .find(queryObject)
+            .skip((perPage * page) - perPage).sort({ afm: 1 }).limit(perPage)
+        res.status(200).send(
+            {
+                pages: Math.ceil(count / perPage),
+                currentPage: page,
+                invoices: invoices
+            })
 
-        }
-        catch (error) {
-            res.status(500).send(error)
-        }
-} 
+    }
+    catch (error) {
+        res.status(500).send(error)
+    }
+}
 
 //get bill 
 exports.getInvoice = (req, res) => {
@@ -116,4 +116,26 @@ exports.deleteInvoice = (req, res) => {
         if (err) return res.status(500).send("There was an issue deleting the invoice")
         res.status(200).send("deleted")
     })
+}
+
+exports.updateInvoice = (req, res) => {
+
+    console.log(req.body)
+    if (!req.body) {
+        return res.status(400).send({ message: "Το τιμολόγιο προς ενημέρωση δεν μπορεί να είναι κενό!" })
+    }
+
+    const id = req.params.id;
+    Bill.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        .then(data => {
+            if (!data) {
+                res.status(400).send({ message: "Το τιμολόγιο δεν ενημερώθηκε. Μήπως δεν υπάρχει;" })
+            }
+            else {
+                res.status(204).send({ message: "Το τιμολόγιο ενημερώθηκε!" })
+            }
+        }).catch(error => {
+            res.status(500).send(error)
+        })
+
 }

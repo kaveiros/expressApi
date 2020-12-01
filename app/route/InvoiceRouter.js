@@ -4,10 +4,6 @@ module.exports = app => {
 
     var router = require('express').Router()
 
-    const ROUTE_PATH = "invoice"
-
-
-
     router.get("/info", billsController.info)
 
     router.get('/faker', billsController.faker)
@@ -18,13 +14,10 @@ module.exports = app => {
 
     router.get('/:id', billsController.getInvoice)
 
+    router.put('/update/:id', billsController.updateInvoice)
 
     router.delete('/erase', billsController.deleteInvoice)
 
-
     app.use("/invoice", router)
-
-
-
 
 }
