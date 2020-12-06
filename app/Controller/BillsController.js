@@ -22,7 +22,6 @@ exports.faker = (req, res) => {
             mainAmount: faker.random.number()
         }, (err, Bill) => {
             if (err) {
-                console.log(err)
                 //change error response
                 return res.status(500).send(err)
             }
@@ -56,7 +55,6 @@ exports.create = (req, res) => {
 exports.search = async (req, res) => {
 
     var page = req.params.page || 1
-    console.log(page)
     console.log(req.body)
 
     await getInvoices(page, req, res)
@@ -98,6 +96,7 @@ async function getInvoices(page, req, res) {
 
     }
     catch (error) {
+        console.log(error)
         res.status(500).send(error)
     }
 }
